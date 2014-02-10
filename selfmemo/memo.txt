@@ -1,0 +1,7 @@
+Memo
+
+After you install bcrypt-ruby and use has_secure_password, you need to restart the server. (railas s)
+http://stackoverflow.com/questions/8873417/error-stating-that-bcrypt-ruby-is-not-part-of-the-bundle-when-using-has-secure
+
+After you install factory_girl_rails, you need to restart spork and guard.
+http://stackoverflow.com/questions/16266826/argumenterror-factory-not-registered-user-hartl-chapter-7-1-3
