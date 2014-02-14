@@ -39,6 +39,22 @@ describe "UserPages" do
             end
             it {should_not have_link('delete', href: user_path(admin))}
         end
+
+        describe "when trying to delete admin" do
+            let(:admin) {FactoryGirl.create(:admin)}
+            before do
+                sign_in admin, no_capybara: true
+            end
+            it "should not be able to delete admin-self" do
+                expect do
+                    delete user_path(admin)
+                end.to change(User, :count).by(0)
+            end
+            describe "should redirect to root_path" do
+                before{delete user_path(admin)}
+                specify {expect(response).to redirect_to(root_path)}
+            end
+        end
     end
 
 	describe "profile page" do
@@ -74,7 +90,7 @@ describe "UserPages" do
     			fill_in "Name",         with: "Example User"
     			fill_in "Email",        with: "user@example.com"
     			fill_in "Password",     with: "foobar"
-    			fill_in "Confirmation", with: "foobar"
+    			fill_in "Confirm Password", with: "foobar"
     		end
 
     		it "should create a user" do
@@ -126,6 +142,16 @@ describe "UserPages" do
             it {should have_link('Sign out', href: signout_path)}
             specify {expect(user.reload.name).to eq new_name}
             specify {expect(user.reload.email).to eq new_email}
+        end
+        describe "forbidden attributes" do
+            let(:params) do
+                {user:{admin:true, password:user.password, password_confirmation: user.password}}
+            end
+            before do
+                sign_in user, no_capybara: true
+                patch user_path(user), params
+            end
+            specify{expect(user.reload).not_to be_admin}
         end
     end
 end
