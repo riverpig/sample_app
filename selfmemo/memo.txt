@@ -5,3 +5,5 @@ http://stackoverflow.com/questions/8873417/error-stating-that-bcrypt-ruby-is-not
 
 After you install factory_girl_rails, you need to restart spork and guard.
 http://stackoverflow.com/questions/16266826/argumenterror-factory-not-registered-user-hartl-chapter-7-1-3
+
+To clarify url, action and path, refer to 表7.1
