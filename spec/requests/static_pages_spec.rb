@@ -15,17 +15,54 @@ describe "StaticPages" do
 		it{should_not have_title('| Home')}
 
 		describe "for signed-in users" do
-			let(:user) { FactoryGirl.create(:user) }
-			before do
-				FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
-				FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
-				sign_in user
-				visit root_path
+
+			describe "single micropost" do
+				let(:user) { FactoryGirl.create(:user) }
+				before do
+					FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
+					sign_in user
+					visit root_path
+				end
+
+				it {should have_content('1 micropost')}
 			end
 
-			it "should render the user's feed" do
-				user.feed.each do |item|
-					expect(page).to have_selector("li##{item.id}", text: item.content)
+			describe "plural microposts" do
+				let(:user) { FactoryGirl.create(:user) }
+				before do
+					FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
+					FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
+					sign_in user
+					visit root_path
+				end
+
+				it {should have_content('2 microposts')}
+
+				it "should render the user's feed" do
+					user.feed.each do |item|
+						expect(page).to have_selector("li##{item.id}", text: item.content)
+					end
+				end
+			end
+
+			describe "micropost pagination" do
+				before do
+					user = FactoryGirl.create(:user)
+					31.times {FactoryGirl.create(:micropost, user: user)}
+					sign_in user
+					visit root_path
+				end
+				after do
+					Micropost.delete_all
+					User.delete_all
+				end
+
+				it {should have_selector('div.pagination')}
+
+				it "should list each micropost" do
+					Micropost.paginate(page: 1).each do |item|
+						expect(page).to have_selector('li', text: item.content)
+					end
 				end
 			end
 		end
@@ -37,7 +74,7 @@ describe "StaticPages" do
 		let(:page_title) {'Help'}
 
 		it_should_behave_like "all static pages"
-		it{should have_title('Help')}
+		it {should have_title('Help')}
 	end
 
 	describe "About page" do
@@ -46,7 +83,7 @@ describe "StaticPages" do
 		let(:page_title) {'About Us'}
 
 		it_should_behave_like "all static pages"
-		it{should have_title('About Us')}
+		it {should have_title('About Us')}
 	end
 
 	describe "Contact page" do

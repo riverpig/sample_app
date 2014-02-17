@@ -62,15 +62,32 @@ describe "UserPages" do
         let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }
         let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }
 
-		before { visit user_path(user) }
+		before do
+            sign_in user
+            visit user_path(user)
+        end
 
-		it { should have_content(user.name) }
-		it { should have_title(user.name) }
+        it { should have_content(user.name) }
+        it { should have_title(user.name) }
 
         describe "microposts" do
             it { should have_content(m1.content) }
             it { should have_content(m2.content) }
             it { should have_content(user.microposts.count) }
+            it {should have_link('delete', micropost_path(m1))}
+        end
+
+        describe "delete button appearance" do
+            let(:another_user) {FactoryGirl.create(:user, email: "another_user@example.com")}
+            let!(:another_m) {FactoryGirl.create(:micropost, user: another_user, content: "boo")}
+            before do
+                visit user_path(another_user)
+            end
+            it { should have_title(another_user.name) }
+            describe "contenct exists, but delete link should not exist" do
+                it { should have_content(another_m.content) }
+                it {should_not have_link('delete')}
+            end
         end
 	end
 
