@@ -18,6 +18,8 @@ group :development, :test do
   gem 'childprocess', '0.4.0'
   gem 'cucumber-rails', '1.4.0', :require => false
   gem 'database_cleaner', github: 'bmabey/database_cleaner'
+  gem 'better_errors'
+  gem 'binding_of_caller' # to use REPL on Better Errors
 end
 
 group :test do
