@@ -194,5 +194,18 @@ describe User do
 			it { should_not be_following(other_user) }
 			its(:followed_users) { should_not include(other_user) }
 		end
+
+		describe "when follower destroyed" do
+			before {@user.destroy}
+			it "should destroy associated relations " do
+				expect(Relationship.where(follower_id: @user.id)).to be_empty
+			end
+		end
+		describe "should destroy associated relations when followed user destroyed" do
+			before {other_user.destroy}
+			it "should destroy associated relations " do
+				expect(Relationship.where(followed_id: other_user.id)).to be_empty
+			end
+		end
 	end
 end
